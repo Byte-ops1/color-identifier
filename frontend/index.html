@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Identifier</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #color-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        #color-table th, #color-table td { padding: 8px; border: 1px solid #ddd; }
+        .color-box { width: 30px; height: 30px; display: inline-block; border: 1px solid #000; }
+    </style>
+</head>
+<body>
+
+    <h1>Upload an Image to Identify Colors</h1>
+    <input type="file" id="imageUpload" accept="image/*">
+    <table id="color-table">
+        <thead>
+            <tr>
+                <th>RGB</th>
+                <th>HEX</th>
+                <th>Count</th>
+                <th>Preview</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        document.getElementById("imageUpload").addEventListener("change", function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append("image", file);
+
+            fetch("https://color-identifier.onrender.com", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.querySelector("#color-table tbody");
+                tableBody.innerHTML = "";
+
+                if (data.colors) {
+                    data.colors.forEach(color => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${color.rgb}</td>
+                            <td>${color.hex}</td>
+                            <td>${color.count}</td>
+                            <td><div class="color-box" style="background:${color.hex}"></div></td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+    </script>
+
+</body>
+</html>
