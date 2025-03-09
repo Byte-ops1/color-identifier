@@ -27,7 +27,7 @@ def get_colors(image_path):
 
 @app.route('/')
 def index():
-    return render_template('frontend/index.html')
+    return render_template('index.html')
 
 @app.route('/upload', methods=['POST'])
 def upload():
